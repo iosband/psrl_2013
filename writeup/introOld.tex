@@ -1,0 +1,31 @@
+\section{Introduction}
+We consider the classical reinforcement learning problem of an agent interacting with its environment while trying to maximize total reward accumulated over time. We model the environment as an MDP over $\states$ states and $\actions$ actions, which are known to the agent. At each time step $t$, an agent in state $s_t$ taking action $a_t$ receives reward $r_{\opt}(s_t,a_t)$ and then transitions to state $s_{t+1}$ according to the probability distribution $\vect{p}_{\opt}(s_{t+1} | s_t,a_t)$. These rewards and transitions are parameterized by some $\opt$ which is not known to the agent, but must be estimated from interacting with the environment.
+
+In an MDP parameterized by $\opt$ we define the cumulative reward up to time $T$ of following policy $\pi$ as
+$ R (\opt, \pi, T) := \sum_{t=1}^T r_{\opt}(s_t,\pi(s_t)) $
+If we suppose that $\rho(\opt)$ is the optimal average reward for the MDP parameterized by $\opt$ a quantity of particular interest is how the performance of a particular policy compares to this quantity. We denote the regret of policy on a particular MDP as
+$\Delta (\opt, \pi, T) := T \rho(\opt) - R(\opt, \pi, T)$
+and the Bayesian regret (also known as BayesRisk) $ := \Exp_{\opt}[\Delta (\opt, \pi, T)]$.
+
+At any time step, the agent faces a conflict between attempting to learn more about their environment $\opt$ and attempting to take optimal actions according their estimate of the environment $\hat{\theta}$. Striking a good balance between these conflicting goals is at the heart of reinforcement learning. This is typically referred to as an ``Exploration/Exploitation" tradeoff.
+
+We consider the most general form of weakly communicating MDPs, where $\states$ is made up of a communicating class and a set of states transient under all policies. It would not be possible to give regret bounds in MDPs which do not exhibit this structure, since otherwise one wrong choice at the start (when the agent knows nothing) might lead you to an isolated closed set of low reward.
+
+We can see that for any $\Delta = o(T)$ the agent really is learning to act optimally within its environment, and actions approach optimal as $t \to \infty$. However, asymptotic results do not provide guarantees for practice; we need to bound regret in the finite case.
+
+Our algorithm EXPOSE replaces the paradigm of optimism in the face of uncertainty (OFU) with that of posterior sampling. At each decision point $k$, an agent's belief about the environment can be described by a probability density for $\opt \sim f_k(\bullet)$. 
+
+Algorithms based on OFU will consider some confidence set $\thetaConf$ which describes $\opt$ with high probability, and choose some estimate $\sampled \in \thetaConf$ which would be ``best" for the agent under some metric. This balances exploration and exploitation since poorly-understood policies are estimated to be as good as statistically possible, the downside is that this might be computationally intractable or incentivize optimistic policies even in the face of data.
+
+In posterior sampling there is no need to explicitly form a confidence set $\thetaConf$. Instead, at each decision point $k$ an agent samples a single $\sampled \sim f_k(\bullet)$ according to its posterior beliefs at that time. The agent then acts as if this $\sampled$ were the true $\opt$. Here we need only solve for a single policy over one MDP, exploration and exploitation are balanced probabilistically according to the agent's posterior distribution.
+
+
+\cite{jaksch2010near}
+
+\cite{Strens2000}
+
+\cite{BartlettTewari}
+
+\cite{FilippiCappeGarivier2011}
+
+[PS CITATIONS]

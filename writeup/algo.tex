@@ -1,0 +1,20 @@
+%---------Algo Box ----------------------------------------------------------------
+
+\hrulefill
+\begin{algorithm}[H]
+\noindent \textbf{Algorithm: Posterior Sampling for Reinforcement Learning (PSRL)}\\
+\hrulefill
+
+ \SetAlgoLined
+\KwData{Prior distribution $f$,   t=1}
+\For{\text{episodes} $k=1,2,\dots$}{
+		sample $M_k \sim f(\cdot | H_{t_k})$ \\
+		compute $\mu_k = \mu^{M_k}$ \\
+		\For{\text{timesteps} $j = 1,\ldots,\tau$}{
+			sample and apply $a_t = \mu_k(s_t,j)$\\
+			observe $r_t$ and $s_{t+1}$ \\
+			$t = t+1$
+		}
+		}
+\end{algorithm}
+\hrule

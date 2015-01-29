@@ -1,0 +1,23 @@
+\section{Problem formulation}
+
+We consider the problem of learning to optimize a random finite horizon MDP $M = (\states, \actions, R^M, P^M, \tau, \rho)$ in repeated finite episodes of interaction. $\mathcal{S}$ is the state space, $\mathcal{A}$ is the action space, $R^M_a(s)$ is a probability distribution over reward realized when selecting action $a$ while in state $s$ whose support is $[0,1]$, $P^M_a(s'|s)$ is the probability of transitioning to state $s'$ if action $a$ is selected while at state $s$, $\tau$ is the time horizon, and $\rho$ the initial state distribution.  
+We define the MDP and all other random variables we will consider with respect to a probability space $(\Omega, \mathcal{F}, \mathbb{P})$.  We assume that $\mathcal{S}$, $\mathcal{A}$, and $\tau$ are deterministic so that the agent need not learn state and action spaces or the time horizon.
+
+A deterministic policy $\mu$ is a function that maps each state $s \in \states$ and $i = 1,\ldots,\tau$ to an action $a \in \actions$.
+For each MDP $M = (\mathcal{S}, \mathcal{A}, R^M, P^M, \tau, \rho)$ and policy $\mu$, we define a value function
+
+$$V^{M}_{\mu, i}(s) := \Exp_{M,\mu}\left[ \sum_{j=i}^{\tau} \overline{R}^M_{a_j}(s_j) \Big| s_1 = s \right],$$
+
+where $\overline{R}^M_a(s)$ denotes the expected reward realized when action $a$ is selected while in state $s$, and the subscripts of the expectation operator indicate that $a_j = \mu(s_j, j)$, and $s_{j+1} \sim P^M_{a_j}(\cdot| s_j)$ for $j = i, \ldots, \tau$.  A policy $\mu$ is said to be optimal for MDP $M$ if $V^{M}_{\mu, i}(s) = \max_{\mu'} V^{M}_{\mu', i}(s)$ for all $s \in \states$ and $i=1,\ldots,\tau$. We will associate with each MDP $M$ a policy $\mu^M$ that is optimal for $M$. 
+
+The reinforcement learning agent interacts with the MDP over episodes that begin at times $t_k = (k-1) \tau + 1$, $k=1,2,\ldots$.
+At each time $t$, the agent selects an action $a_t$, observes a scalar reward $r_t$, and then transitions to $s_{t+1}$.
+If an agent follows a policy $\mu$ then when in state $s$ at time $t$ during episode $k$, it selects an action $a_t=\mu(s, t - t_k)$.
+Let $H_t = (s_1,a_1,r_1,\ldots,s_{t-1},a_{t-1},r_{t-1})$ denote the history of observations made \emph{prior} to time t.  
+A reinforcement learning algorithm is a deterministic sequence $\{\pi_k | k = 1, 2, \ldots\}$ of functions, each mapping $H_{t_k}$ to a probability distribution $\pi_{k}(H_{t_k})$ over policies. At the start of the $k$th episode, the algorithm samples a policy $\mu_{k}$ from the distribution $\pi_{k}(H_{t_k})$. The algorithm then selects actions $a_{t}=\mu_{k}(s_t, t - t_k)$ at times $t$ during the $k$th episode.
+
+We define the regret incurred by a reinforcement learning algorithm $\pi$ up to time $T$ to be
+$$\text{Regret}(T, \pi) := \sum_{k=1}^{\lceil T/\tau \rceil} \Delta_k,$$
+where $\Delta_k$ denotes regret over the $k$th episode, defined with respect to the true underlying MDP $M^*$ by:
+$$\Delta_k = \sum_{s \in \states} \rho(s) (V^{M^*}_{\mu^*, 1}(s) - V^{M^{*}}_{\mu_k, 1}(s)),$$
+with $\mu^* = \mu^{M^*}$ and $\mu_{k}\sim \pi_{k}(H_{t_k})$. Note that regret is not deterministic since it can depend on the random MDP $M^*$, the algorithm's internal random sampling and, through the history $H_{t_k}$, on previous random transitions and random rewards. We will assess and compare algorithm performance in terms of regret and its expectation.

@@ -1,0 +1,133 @@
+\documentclass[10pt]{article}
+
+%---------------------------------------------------------------------------------------------------------------------------------------------
+% Including Packages
+\usepackage{nips13submit_e,times}
+\usepackage{color}
+\usepackage{algorithm2e}
+\usepackage{ mathrsfs }
+\usepackage{ dsfont }
+\usepackage{lmodern}
+\usepackage{array}
+\usepackage{bbm}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage[mathscr]{eucal}
+\usepackage{graphicx}
+\usepackage{mathrsfs}
+\usepackage{psfrag}
+\usepackage{color}
+\usepackage{here}
+\usepackage{amsthm}
+\usepackage[margin=1in]{geometry}
+%\usepackage[T1]{fontenc}
+%\usepackage[charter]{mathdesign}
+%\usepackage{eulervm}
+\usepackage{enumitem}
+\usepackage{xcolor}
+\usepackage{caption}
+\usepackage{subcaption}
+
+
+\newtheorem{theorem}{Theorem}
+\newtheorem{corollary}{Corollary}
+\newtheorem{lemma}[theorem]{Lemma}
+%---------------------------------------------------------------------------------------------------------------------------------------------
+% Setting up macro shortcuts
+\newcommand{\Exp}{\mathds{E}}
+\newcommand{\Expk}{\mathds{E}_{k}}
+\newcommand{\Prob}{\mathds{P}}
+\newcommand{\Ind}{\mathds{1}}
+\newcommand{\states}{\mathcal{S}}
+\newcommand{\actions}{\mathcal{A}}
+\newcommand{\confidence}{\mathcal{M}_k}
+\newcommand{\vect}[1]{\boldsymbol{#1}}
+\newcommand{\history}{\sigma ({H}_{t_k}) }
+\newcommand{\opt}{M^*}
+\newcommand{\sampled}{{M_k}}
+\newcommand{\Pstar}{P^{*}(\cdot \mid s_t, a_t)} 
+\newcommand{\Pk}{P_{k}(\cdot \mid s_t, a_t)}
+\newcommand{\Pdiff}{(P_{k}-P^{*})(\cdot \mid s_t, a_t)}
+\newcommand{\Rdiff}{(r_k-r^{*})(s_t, a_t)}
+
+\newcommand{\optPol}{\mu^{*}}
+\newcommand{\sampledPol}{\mu_{k}}
+\newcommand{\bellmanSampled}{\mathcal{T}_{\mu_{k}(\cdot,i)}^{k}}
+\newcommand{\bellmanTrue}{\mathcal{T}_{\mu_{k}(\cdot,i)}^{*}}
+\newcommand{\bellmanSampledA}{\mathcal{T}_{\mu_{k}(\cdot,1)}^{k}}
+\newcommand{\bellmanTrueA}{\mathcal{T}_{\mu_{k}(\cdot,1)}^{*}}
+\newcommand{\vSampled}{V_{\mu_k, 1}^{k}}
+\newcommand{\vSampledi}{V_{\mu_k, i}^{k}}
+\newcommand{\vTrue}{V_{\tau, \mu_k}^{*}}
+
+\newcommand{\thetaConf}{{\Theta}_k}
+\newcommand{\ignorance}{ \| \vect{v}_{\opt,\sampledPol} ( P_{\sampled,\sampledPol} - P_{\opt,\sampledPol} ) \|_1}
+\newcommand{\ignorancePhi}{ \| \vect{v}_{\opt,\mu_\phi} ( P_{\phi,\mu_\phi} - P_{\opt,\mu_\phi} ) \|_1}
+\newcommand{\errorP}{ \| ( P_{\sampled,\sampledPol}(\dot | s_t,\sampledPol(s_t)) - P_{\opt,\sampledPol}(\dot | s_t,\sampledPol(s_t)) ) \|_1}
+\newcommand{\samplespan}{\| \vect{\lambda_{\sampled,\sampledPol}} \|_{\infty}}
+
+
+%---------------------------------------------------------------------------------------------------------------------------------------------
+
+\title{(More) Efficient Reinforcement Learning via \\ Posterior Sampling}
+\author{Ian Osband, Daniel Russo, Benjamin Van Roy}
+
+%This is the author formatting given in the NIPS template. 
+\author{
+Ian Osband \\
+Department of Management Science and Engineering\\
+Stanford University \\
+\And
+Dan Russo \\
+Department of Management Science and Engineering \\
+Stanford Universit \\
+\AND
+Benjamin Van Roy \\
+Departments of Management Science and Engineering and Electrical Engineering \\
+Stanford University \\
+}
+
+% The \author macro works with any number of authors. There are two commands
+% used to separate the names and addresses of multiple authors: \And and \AND.
+%
+% Using \And between authors leaves it to \LaTeX{} to determine where to break
+% the lines. Using \AND forces a linebreak at that point. So, if \LaTeX{}
+% puts 3 of 4 authors names on the first line, and the last on the second
+% line, try using \AND instead of \And before the third author name.
+
+\newcommand{\fix}{\marginpar{FIX}}
+\newcommand{\new}{\marginpar{NEW}}
+
+%\nipsfinalcopy % Uncomment for camera-ready version
+
+
+\begin{document}
+\maketitle
+
+\input{abstract}
+
+\input{introduction}
+
+\input{formulation}
+
+\input{specification}
+
+\input{implicitOptimism}
+
+\input{analysis}
+
+\input{simulation}
+
+\input{conclusion}
+
+\newpage
+
+\small{
+\bibliography{referenceInformation}
+\bibliographystyle{unsrt}
+}
+
+\newpage
+\input{appendix}
+
+\end{document}

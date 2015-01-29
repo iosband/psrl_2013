@@ -1,0 +1,29 @@
+\appendix
+\section{Bounding $\min \left\{\sum_{k\in K_G} \sum_{i=1}^{\tau} \min\left\{ \beta_k^{\delta_2}(s,a), \tau\right\}, \,\, T \right\}$} 
+
+Using the definition of $\beta_k^{\delta_2}(s,a) := \sqrt{\frac{14 S \log(2SAm t_k / \delta_{2})}{\max \{1,N_{t_k}(s,a) \}} }$
+we proceed to bound \eqref{eq: final sum} in a manner similar to \cite{jaksch2010near}:
+$$ \min \left\{\sum_{k\in K_G} \sum_{i=1}^{\tau} \min\left\{ 2\tau\sqrt{\frac{14 S \log(2SAm t_k / \delta_2)}{\max \{1,N_{t_k}(s,a) \}} }, \tau\right\}, \,\, T \right\}= O\left(\tau S \sqrt{ AT \log(SAT/ \delta_{2})}\right).$$
+
+We split the sum into two parts as: 
+\begin{eqnarray}	
+\sum_{k\in K_G} \sum_{i=1}^{\tau} \min\left\{ 2\tau\sqrt{\frac{14 S \log(2SAm t_k / \delta_2)}{\max \{1,N_{t_k}(s,a) \}} }, \tau\right\} &\leq& \tau \sum_{k\in K_G}\sum_{i=1}^{\tau}\left[ \mathbf{1}(N_{t_k}(s,a) \leq \tau) \right] \\
+&+& 2\tau \sum_{k\in K_G}\sum_{i=1}^{\tau}\left[ \mathbf{1}(N_{t_k}(s,a) > \tau)\sqrt{\frac{14 S \log(2SAT^2 / \delta_2)}{\max \{1,N_{t_k}(s_t,a_t) \}} }  \right] 
+\end{eqnarray}
+
+Now, the consider the event $(s_t, a_t)=(s,a)$ and $(N_{t_k}(s,a) \leq \tau)$. This can happen fewer than $2\tau$ times per state action pair. Therefore, $\tau \sum_{k\in K_G}\sum_{i=1}^{\tau}\mathbf{1}(N_{t_k}(s,a) \leq \tau) \leq 2\tau^2 SA$ 
+
+Now, suppose $N_{t_k}(s,a)>\tau$. Then for any $t\in \{t_k,..,t_{k+1}-1\}$, $N_{t}(s,a)+1 \leq N_{t_k}(s,a)+\tau \leq 2N_{t_k}(s,a)$. Therefore 
+\begin{equation}
+ \sum_{k=1}^{m} \sum_{t=t_k}^{t_{k+1}-1} \sqrt{\frac{\mathbf{1}(N_{t_k}(s_t, a_t)>\tau)}{N_{t_k}(s_t,a_t)}} \leq \sum_{k=1}^{m} \sum_{t=t_k}^{t_{k+1}-1}  \sqrt{\frac{2}{N_{t}(s_t,a_t)+1}} = \sqrt{2} \sum_{t=1}^{T} (N_{t}(s_t, a_t)+1)^{-1/2}
+\end{equation}
+Now, we can rewrite this sum as: 
+$$\sum_{t=1}^{T} (N_{t}(s_t, a_t)+1)^{-1/2} = \sum_{s,a} \sum_{j=1}^{N_{T+1}(s,a)} j^{-1/2} \leq \sum_{s,a} \intop_{x=0}^{N_{T+1}(s,a)} x^{-1/2} dx=2\sum_{s,a} \sqrt{N_{T+1}(s,a)}$$
+By the Cauchy-Shwartz inequality, $\sum_{s,a} \sqrt{N_{T+1}(s,a)} \leq \sqrt{SA \sum_{s,a} N_{T+1}(s,a)} =\sqrt{SAT}$. Hence, we have shown that there is a numerical constant $c$ such that 
+\begin{eqnarray}
+\min \left\{\sum_{k\in K_G} \sum_{i=1}^{\tau} \min\left\{ 2\tau\sqrt{\frac{14 S \log(2SAm t_k / \delta_2)}{\max \{1,N_{t_k}(s,a) \}} }, \tau\right\}, \,\, T \right\} &\leq& \min\left\{ 2\tau^2 SA+c\tau\sqrt{SAT \log(SAT^2)}, \,\,T  \right\} \\
+&\leq& \min\left\{ 2\tau^2 SA, \,\,T  \right\}+c\tau\sqrt{SAT \log(SAT^2)}\\
+&\leq& \sqrt{2\tau^2 SAT}+c\tau\sqrt{SAT \log(SAT^2)}.
+\end{eqnarray}
+
+Which completes the proof.

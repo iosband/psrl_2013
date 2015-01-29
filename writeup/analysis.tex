@@ -1,0 +1,122 @@
+\section{Analysis}
+
+An essential tools in our analysis will be the dynamic programming, or Bellman operator $\mathcal{T}_{\mu}^{M}$ which for any MDP $M = (\states, \actions, R^M, P^M, \tau, \rho)$, stationary policy $\mu:\states \rightarrow \actions$ and value function $V:\states \rightarrow \mathds{R}$, is defined by
+
+$$\mathcal{T}_{\mu}^{M} V(s) := \overline{R}_{\mu}^{M} (s, \mu) + \sum_{s' \in \states} P_{\mu(s)}^{M}(s' | s) V(s').$$
+
+This operation returns the expected value of state $s$ where we follow the policy $\mu$ under the laws of $M$, for one time step. The following lemma gives a concise form for the dynamic programming paradigm in terms of the Bellman operator.
+\begin{lemma}[Dynamic programming equation]
+\label{lem: DPl}
+%For $\sampled$ sampled from Bayesian posterior with true parameter $\opt$ then 
+For any MDP $M = (\states, \actions, R^M, P^M, \tau, \rho)$ and policy $\mu:\states \times \{1,\ldots,\tau\} \rightarrow \actions$, the value functions $V^M_\mu$ satisfy:
+\begin{equation}\label{eq: DP}
+V_{\mu,i}^{M} = \mathcal{T}_{\mu(\cdot,i)}^M V_{\mu,i+1}^M
+\end{equation}
+\end{lemma}
+
+for $i=1\dots \tau$, with $V_{\mu,\tau+1}^{M} := 0$. In order to streamline our notation we will let $V_{\mu,i}^* := V_{\mu,i}^{M^*}$ , $ V_{\mu,i}^k (s) := V_{\mu,i}^{M_k} (s)$, $\mathcal{T}_{\mu}^{k} := \mathcal{T}_{\mu}^{M_k} $, $\mathcal{T}_{\mu}^{*} := \mathcal{T}_{\mu}^{M^*} $ and  $P^*_\mu(\cdot | s) := P_{\mu(s)}^{M^*}(\cdot | s)$.
+
+
+%-----------Regret in terms of one-step estimation error -------------------------------%
+\subsection{Rewriting regret in terms of Bellman error}
+\label{subsec: regret in terms of bellman error}
+We show here that, for 
+$d_{t_k+i} := \sum_{s' \in \states} \{P_{\mu_{k}(\cdot,i)}^{*}(s' \vert s_{t_k+i })(V_{\sampledPol,i+1}^{*}-V_{\sampledPol,i+1}^{k})(s') \} -(V_{\sampledPol,i+1}^{*}-V_{\sampledPol,i+1}^{k})(s_{t_k+i})$
+
+\begin{equation} \label{eq: regret in terms of bellman error}
+\tilde{\Delta}_k = \sum_{i=1}^{\tau} \left[(\bellmanSampled-\bellmanTrue)V^k_{\sampledPol,i+1}(s_{t_k+i})   \right] + \sum_{i=1}^{\tau} d_{t_k+i}
+\end{equation}
+
+To see why \eqref{eq: regret in terms of bellman error} holds, simply apply the Dynamic programming equation inductively: 
+\begin{eqnarray*}
+(V_{\sampledPol,1}^{k}-V_{\sampledPol,1}^{*})(s_{t_k+1}) &=& (\bellmanSampledA V_{\sampledPol,2}^{k} - \bellmanTrueA V_{\sampledPol,2}^{*})(s_{t_k+1})\\
+&=& (\bellmanSampledA-\bellmanTrueA) V_{\sampledPol,2}^{k}(s_{t_k+1})+ \sum_{s' \in \states} \{P_{\mu_k(\cdot, 1)}^{*}(s' \vert s_{t_k+1})(V_{\sampledPol,2}^{*}-V_{\sampledPol,2}^{k})(s') \}\\
+&=& (\bellmanSampledA-\bellmanTrueA) V_{\sampledPol,2}^{k}(s_{t_k+1})+(V_{\sampledPol,2}^{*}-V_{\sampledPol,2}^{k})(s_{t_k+1})+d_{t_k+1}\\
+&=& \dots \\
+&=& \sum_{i=1}^{\tau} (\bellmanSampled-\bellmanTrue) V_{\sampledPol, i+1}^{k}(s_{t_k+i})+\sum_{i=1}^{\tau} d_{t_k+i}.
+\end{eqnarray*}
+
+This expresses the regret in terms two factors. The first factor is the one step \emph{Bellman error} $\left[(\bellmanSampled-\bellmanTrue) V_{\sampledPol, i+1}^{k}(s_{t_k+i})   \right]$ under the sampled MDP $M_k$. Crucially, \eqref{eq: regret in terms of bellman error} depends only the Bellman error under the observed policy $\mu_k$ and the states $s_1,..,s_T$ that are actually visited over the first $T$ periods. As these actions are sampled, we go on to show that the posterior distribution of $M_k$ concentrates around $M^*$ and so this term tends to zero. 
+
+The second term captures the randomness in the transitions of the true MDP $M^*$. In state $s_t$ under policy $\mu_k$, the expected value of 
+$(V_{\sampledPol,i+1}^{*}-V_{\sampledPol,i+1}^{k})(s_{t_k+i})$
+is exactly
+$\sum_{s' \in \states} \{P_{\mu_{k}(\cdot,i)}^{*}(s' \vert s_{t_k+i})(V_{\sampledPol,i+1}^{*}-V_{\sampledPol,i+1}^{k})(s') \}$.
+Hence, the term $\sum_{t=1}^{T} d_t$ is the sum of martingale differences each bounded by $\tau$,
+which we will proceed to bound via the Azuma-Hoeffding inequality.
+
+%Therefore, the term $\sum_{t=1}^{T} d_t$ is the sum of martingale differences each bounded by $\tau$. Via the Azuma-Hoeffding inequality, we can say
+%$\mathds{P}\left( \sum_{t=1}^{T} d_t \geq \tau \sqrt{2T \log(1/\delta)} \,\, \bigg\vert \,\, M^{*}\right) \leq 1-\delta.$
+%This immediately imples that $\Exp[ \sum_{1}^{T} d_t \vert M^{*}]=0$. In addition, since $d_t \in [-\tau, \tau]$, by the azuma-hoeffding inequality 
+%$\mathds{P}\left( \sum_{t=1}^{T} d_t \geq \tau \sqrt{2T \log(1/\delta)} \,\, \bigg\vert \,\, M^{*}\right) \leq 1-\delta.$
+%This will be a subdominant factor in our bounds. 
+
+
+
+\subsection{Introducing confidence sets}
+The last section reduced the algorithm's regret to its Bellman error plus some additive white noise. We will proceed by arguing that the sampled Bellman operator $\bellmanSampled$ concentrates around the true Bellman operatior $\bellmanTrue$ and that this noise term is subdominant. To do this, we introduce high probability confidence sets similar to those used in \cite{jaksch2010near} and \cite{bartlett2009regal}. Let $\hat{P}_a^{t}(\cdot | s)$ denote the emprical distribution up period $t$ of transitions observed after sampling $(s,a)$, and let $\hat{R}_{a}^{t}(s)$ denote the empirical average reward. Finally, define $N_{t_k}(s,a)= \sum_{t=1}^{t_k-1}\Ind_{\{(s_t,a_t)=(s,a)\}}$ to be the number of times $(s,a)$ was sampled prior to time $t_k$. Define the confidence set for episode $k$:
+
+$$\mathcal{M}_{k}^{\delta_{2}} := \left\{M: \left\Vert \hat{P}_{a}^{t}(\cdot | s) - P_a^{M}(\cdot | s)\right\Vert_1 \leq \beta_k^{\delta_2}(s,a) \,\, 
+\& \,\,\, |\hat{R}_{a}^{t}(s) - R_a^{M}(s)|\leq \beta_k^{\delta_2}(s,a)
+\,\,\,\, \forall (s,a) \right\}$$ 
+
+Where $\beta_k^{\delta_2}(s,a) := \sqrt{\frac{14 S \log(2SAm t_k / \delta_{2})}{\max \{1,N_{t_k}(s,a) \}} }$ is chosen conservatively so that $\mathcal{M}_{k}^{\delta_{2}}$ contains both $M^*$ and $M_k$ with high probability.
+Using that $\tilde{\Delta}_k\leq \tau$ %together with a union bound on probabilities 
+we can decompose regret as follows:
+
+\begin{equation}\label{eq: confidence set decomposition}
+\sum_{k=1}^{m} \tilde{\Delta}_k \leq \sum_{k=1}^{m} \tilde{\Delta}_k \Ind_{\{M_k, M^* \in \mathcal{M}_k^{\delta_2}\}} +\tau \sum_{k=1}^{m} 
+[\Ind_{\{M_k \notin \mathcal{M}_k^{\delta_2}\}}+\Ind_{\{M^* \notin \mathcal{M}_k^{\delta_2}\}}]
+\end{equation}
+
+When $\mathcal{M}_k^{\delta_{2}}$ contains both $M_k$, and $M^{*}$, the triangle inequality provides a bound on $\left\Vert P_{a}^{*}(\cdot | s)-P_{a}^{k}(\cdot |s)\right\Vert_1$ and $|R_{a}^{*}(s)-R_{a}^{k}(s)|$. 
+Then, using the definition of the Bellman operators $\bellmanSampled$ and $\bellmanTrue$, 
+it follows that in the event $\left\{M_k,M^{*}\in \mathcal{M}_k^{\delta_{2}}\right\}$, for all $V \in \mathbb{R}^{S}$, stationary policies $\mu$, and states $s$. 
+
+\begin{equation} \label{eq: maximum bellman error within confidence set}
+(\mathcal{T}^{k}_{\mu} - \mathcal{T}^{*}_{\mu})V(s) \leq 2 \beta_k^{\delta_2}(s,a) \{ 1+ \left\Vert V \right\Vert_{\infty} \}
+\end{equation}
+
+Now, since $\mathcal{M}_{k}^{\delta_{2}}$ is $\history$-measureable, by Lemma \ref{lem: fundemental}, 
+$\Exp [\Ind_{\{M_k \notin \mathcal{M}_k^{\delta_2}\}} \vert H_{t_k}] =  \Exp [\Ind_{\{M^* \notin \mathcal{M}_k^{\delta_2}\}}\vert H_{t_k}]$.
+ Therefore, applying the azuma-hoeffding inequality again establishes that with probability at least $1-\delta$, $\sum_{k=1}^{m} \Ind_{\{M_k \notin \mathcal{M}_k^{\delta_2}\}} \leq \sum_{k=1}^{m} \Ind_{\{M^* \notin \mathcal{M}_k^{\delta_2}\}} +\sqrt{2m \log(1/\delta)}$.
+
+Now, combining \eqref{eq: from Delta to Delta tilde},\eqref{eq: regret in terms of bellman error}, and \eqref{eq: confidence set decomposition} shows that for any $\delta_1>0$, with probability at least $1-\delta_1$, 
+\begin{equation} \label{eq: Regret Decomposition with confidence sets}
+\sum_{k=1}^{m} \Delta_k \leq \sum_{k=1}^{m} \tilde{\Delta}_k  \Ind_{\{M_k, M^* \in \mathcal{M}_k^{\delta_2}\}}
++ 2\tau\sum_{k=1}^{m} \Ind_{\{M^* \notin \mathcal{M}^{\delta_2}_k\}}
++2\tau \sqrt{2m \log(1/\delta_{1})}
+\end{equation}
+ 
+ Lemma 17 of \cite{jaksch2010near} shows\footnote{The logarithmic term in our confidence sets are inflated by a factor of $m$ relative to those of \cite{jaksch2010near}. This is equivalent to choosing $\delta_2=\delta/m$ where $\delta$ is the parameter defining their confidence sets.} that 
+$\mathds{P}(M^* \notin \mathcal{M}_k^{\delta_{2}}) \leq \delta_{2}/m$
+, which implies 
+$\mathds{P}\left(\sum_{k=1}^{m} \Ind_{\{M^* \notin \mathcal{M}_k^{\delta_2}\}} =0 \vert M^* \right)\geq 1-\delta_{2}$.
+The reader should note that the only influence of the prior distribution for $M^*$ is captured through the term $\delta_1$. The regret has only a logarithmic dependence on prior probabilities which shows that these results are robust to prior misspecification. We will now proceed to bound the remaining terms with high probability, conditional on the true MDP $M^*$. In doing so, we will provide a link between a Bayesian algorithm and associated bounds which hold even in a frequentist sense.
+
+
+%----------- Ignorance Regret -----------------------------------------------------------
+\subsection{Regret from Bellman error}
+We let the set $K_G=\left\{k\leq m: \, M_k, M^{*} \in \mathcal{M}_k^{\delta_{2}} \right\}$ denote the set of ``good episodes'' in which confidence sets hold. 
+Recall from Section \ref{subsec: regret in terms of bellman error} that $\tilde{\Delta}_k = \sum_{i=1}^{\tau} \left[(\bellmanSampled-\bellmanTrue) V_{\sampledPol, i+1}^{k}(s_{t_k+i})  + d_{t_k+i} \right] $. First, we will bound 
+$\sum_{k=1}^{m} \sum_{i=1}^{\tau} (\Ind_{\{k \in K_G\}} d_{t_{k}+i})$. 
+We know $\Exp [(\Ind_{\{k \in K_G\}} d_{t_k+i} |H_{t_k+i}, M^*, M_k]= \Ind_{\{k \in K_G\}}  \Exp [d_{t_k+i} | H_{t_k+i}, M^*, M_k]=0$, and $d_{t_k+i}\Ind_{\{k \in K_G\}}  \in [-\tau, \tau]$. Therefore, this is the sum of bounded martingale differences, and by the Azuma-Hoeffding inequality,
+
+$$\Prob \left( \left\vert \sum_{k=1}^{m} \sum_{i=1}^{\tau} d_{t_{k}+i}\Ind_{\{k\in K_G\}} \right\vert > 2\tau \sqrt{2T \log(1/\delta_{2}}) \,\, \bigg\vert M^*  \right) \leq \delta_{2} $$
+
+Therefore we have that, conditional on $M^*$, with probability at least $1-\delta_{2}$,
+\begin{equation*}
+\sum_{k\in K_G} \tilde{\Delta}_k \leq \min\left\{ \sum_{k\in K_G}\tilde{\Delta}_k, \, T\right\} \leq \min\left\{ \sum_{k\in K_g}\sum_{i=1}^{\tau} \left[ (\bellmanSampled-\bellmanTrue) V_{\sampledPol, i+1}^{k}(s_{t_k+i})\right] , \,\, T \right\} + 2\tau \sqrt{2T \log(1/\delta_{2})}.
+\end{equation*}
+
+Equation \eqref{eq: maximum bellman error within confidence set} and the bound $\left\Vert V_{\sampledPol, i}^{k} \right\Vert_{\infty}\leq \tau$
+ shows that for $k\in K_G$, $(\bellmanSampled-\bellmanTrue) V_{\sampledPol, i+1}^{k}(s_{t_k+i}) \leq \min\{ \beta_k^{\delta_2}(s,a), \tau\}$. In the technical appendix we show as per \cite{jaksch2010near},
+\begin{equation} \label{eq: final sum}
+ \min \left\{\sum_{k\in K_G} \sum_{i=1}^{\tau} \min\left\{ \beta_k^{\delta_2}(s,a), \tau\right\}, \,\, T \right\}= O\left(\tau S \sqrt{ AT \log(SAT/ \delta_{2})}\right)
+\end{equation}
+which completes the proof. Equation \eqref{eq: expected regret bound} follows from this analysis by choosing $\delta_2=1/T$.  
+
+
+
+
+

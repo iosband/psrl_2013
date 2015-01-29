@@ -1,0 +1,32 @@
+\section{Posterior sampling for reinforcement learning}
+
+The use of posterior sampling for reinforcement learning (PSRL) was first proposed by \cite{strens2000bayesian}.
+PSRL begins with a prior distribution over MDPs with states $\states$, actions $\actions$ and horizon $\tau$.  At the start of each $k$th episode, PSRL computes the posterior distribution conditioned on the history $H_{t_k}$ available at that time.  PSRL then samples an MDP $M_k$ from this posterior distribution and follows the policy $\mu_k = \mu^{M_k}$ over episode $k$.  This process is displayed below in an algorithm format.
+
+\input{algo}
+
+The following result establishes what, to the best of our knowledge, are the first regret bounds for PSRL.
+\begin{theorem}
+\label{th:regret}
+If $f$ is the distribution of $M^*$ then, for all $\delta>0$, with probability at least $1-\delta$,
+\begin{equation} \label{eq: high probability regret bound}
+\mathrm{Regret}(T, \pi^{\rm PS}_{\tau}) = O\left(\tau S\sqrt{AT\log(SAT/\delta)}\right)
+\end{equation}
+and 
+\begin{equation}\label{eq: expected regret bound}
+\Exp \left[ \mathrm{Regret}(T, \pi^{\rm PS}_{\tau}) \bigg\vert M^* \right] = O\left(\tau S\sqrt{AT\log(SAT)} +\tau\sqrt{\lceil T / \tau\rceil \log(1/\delta)} \right)
+\end{equation}
+\end{theorem}
+
+The bounds have $\tilde{O}(\tau S\sqrt{AT})$ regret, which is close to state of the art. Equation (\ref{eq: expected regret bound}) demonstrates that this bound is enjoyed with extremely high confidence over the realized MDP $M^*$, even if $\delta$ is of order $(TSA)^{-S^2 A \tau}$. Further, we note that unlike the similar results of \cite{jaksch2010near,bartlett2009regal} which require $\delta$ as an input at runtime, \emph{any} application of PSRL simultaneously satisfies (\ref{eq: high probability regret bound}) and (\ref{eq: expected regret bound}) for all $\delta>0$.
+
+Theorem \ref{th:regret} applies when the prior provided to the algorithm is consistent with the distribution of the MDP.  An immediate corollary accommodates cases where there is a prior misspecification.
+\begin{corollary}
+\label{co:mismatch}
+For all $\delta>0$, with probability at least $1-\delta$,
+$$\mathrm{Regret}(T, \pi^{\rm PS}_{\tau}) = O\left(\tau S\sqrt{AT\log(SAT \gamma /\delta)}\right)$$
+and 
+$$\Exp \left[ \mathrm{Regret}(T, \pi^{\rm PS}_{\tau}) \bigg\vert M^* \right] = O\left(\tau S\sqrt{AT\log(SAT)} +\tau\sqrt{\lceil T / \tau\rceil \log(\gamma/\delta)} \right),$$
+where $\gamma = \sup_{\mathcal{M}} \mathbb{P}(M^* \in \mathcal{M}) / f(\mathcal{M})$ represents the maximum prior misspecification.
+\end{corollary}
+
