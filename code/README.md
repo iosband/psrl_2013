@@ -1,5 +1,3 @@
-(More) Efficient Reinforcement Learning via Posterior Sampling
-======================================================================
 ## Accompanying MATLAB code
 ### Ian Osband - December 2013 - [Paper link](http://arxiv.org/abs/1306.0940)
 
